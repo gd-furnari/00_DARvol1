@@ -124,8 +124,6 @@ given to the module, in this case "com" -->
                     NOTE: the table of study comparison could also be included within the macro
                     -->
                     <#--  <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity"/>  -->
-
-                    <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" />
                 </sect2>
 
                 <#-- TODO: rest of subsections of 6.1 -->
@@ -161,71 +159,7 @@ given to the module, in this case "com" -->
 
 </#if>
 
-
 <#macro printSummary subject docType docSubtype>
-	<#compress>
-        <#--  
-        <#assign docList = iuclid.getSectionDocumentsForParentKey(subject.documentKey, docType, docSubType) />  
-        -->
-
-		<#--  CREATE TABLE  -->
-	        <table border="1">
-				<#--  Assign title  -->
-				<title>Summary of acute toxicity</title>
-				
-				<#--  Define table header  -->
-	            <thead align="center" valign="middle">
-					<tr>
-						<th><?dbfo bgcolor="#FBDDA6" ?>
-                            <emphasis role="bold">
-                                Method, guideline, deviations1 if any
-                            </emphasis>
-                        </th>
-						<th><?dbfo bgcolor="#FBDDA6" ?>
-                            <emphasis role="bold">
-                                Species, strain, sex, no/group
-                            </emphasis>
-                        </th>
-						<th><?dbfo bgcolor="#FBDDA6" ?>
-                            <emphasis role="bold">
-                                Test substance
-                            </emphasis>
-                        </th>
-						<th><?dbfo bgcolor="#FBDDA6" ?>
-                            <emphasis role="bold">
-                                Dose levels, duration of exposure
-                            </emphasis>
-                        </th>
-                        <th><?dbfo bgcolor="#FBDDA6" ?>
-                            <emphasis role="bold">
-                                Value LD50
-                            </emphasis>
-                        </th>
-                        <th><?dbfo bgcolor="#FBDDA6" ?>
-                            <emphasis role="bold">
-                                Reference
-                            </emphasis>
-                        </th>
-					</tr>
-	            </thead>
-				
-				<#--  Define table body  -->
-	            <tbody valign="middle">
-                    <tr>
-						<td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-	            </tbody>
-	        </table>
-	</#compress>
-</#macro>
-
-
-<#macro printSummaryOld subject docType docSubtype>
 
 <#-- NOTE: the code below should change to accommodate special cases 
                     -->
