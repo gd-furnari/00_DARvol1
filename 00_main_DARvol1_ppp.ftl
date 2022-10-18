@@ -124,8 +124,76 @@ given to the module, in this case "com" -->
                     NOTE: the table of study comparison could also be included within the macro
                     -->
                     <#--  <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity"/>  -->
+                    
+                    <#-- Parse Acute Toxicity document -->
+                    <#assign summaryList = iuclid.getSectionDocumentsForParentKey(activeSubstance.documentKey, "ENDPOINT_SUMMARY", "AcuteToxicity") />
 
-                    <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" />
+                    <#--  CREATE TABLE  -->
+                    <table border="1">
+                        <#--  Assign title  -->
+                        <title>Summary of acute toxicity</title>
+                        
+                        <#--  Define table header  -->
+                        <thead align="center" valign="middle">
+                            <tr>
+                                <th><?dbfo bgcolor="#FBDDA6" ?>
+                                    <emphasis role="bold">
+                                        Method, guideline, deviations1 if any
+                                    </emphasis>
+                                </th>
+                                <th><?dbfo bgcolor="#FBDDA6" ?>
+                                    <emphasis role="bold">
+                                        Species, strain, sex, no/group
+                                    </emphasis>
+                                </th>
+                                <th><?dbfo bgcolor="#FBDDA6" ?>
+                                    <emphasis role="bold">
+                                        Test substance
+                                    </emphasis>
+                                </th>
+                                <th><?dbfo bgcolor="#FBDDA6" ?>
+                                    <emphasis role="bold">
+                                        Dose levels, duration of exposure
+                                    </emphasis>
+                                </th>
+                                <th><?dbfo bgcolor="#FBDDA6" ?>
+                                    <emphasis role="bold">
+                                        Value LD50
+                                    </emphasis>
+                                </th>
+                                <th><?dbfo bgcolor="#FBDDA6" ?>
+                                    <emphasis role="bold">
+                                        Reference
+                                    </emphasis>
+                                </th>
+                            </tr>
+                        </thead>
+                        
+                        <#--  Define table body  -->
+                        <tbody valign="middle">
+                            <#list summaryList as summary>
+                                <#-- PATH: summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaOralRoute.LinkToRelevantStudyRecords -->
+                                <#if summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaOralRoute.LinkToRelevantStudyRecords?has_content>
+                                    <#list summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaOralRoute.LinkToRelevantStudyRecords as item>
+                                        <tr>
+                                            <td><@com.picklist item.AcuteToxicityOral.AdministrativeData.Endpoint/></td>
+                                            <td><@com.picklist item.AcuteToxicityOral.AdministrativeData.Endpoint/></td>
+                                            <td><@com.picklist item.AcuteToxicityOral.AdministrativeData.Endpoint/></td>
+                                            <td><@com.picklist item.AcuteToxicityOral.AdministrativeData.Endpoint/></td>
+                                            <td><@com.picklist item.AcuteToxicityOral.AdministrativeData.Endpoint/></td>
+                                            <td><@com.picklist item.AcuteToxicityOral.AdministrativeData.Endpoint/></td>
+                                        </tr>
+                                    </#list>
+                                </#if>
+                            </#list>
+
+                            
+                        </tbody>
+                    </table>
+
+                    
+    
+                    
                 </sect2>
 
                 <#-- TODO: rest of subsections of 6.1 -->
@@ -163,64 +231,62 @@ given to the module, in this case "com" -->
 
 
 <#macro printSummary subject docType docSubtype>
-	<#compress>
-        <#--  
-        <#assign docList = iuclid.getSectionDocumentsForParentKey(subject.documentKey, docType, docSubType) />  
-        -->
+    <#assign docList = iuclid.getSectionDocumentsForParentKey(subject.documentKey, docType, docSubType) />
 
+	<#compress>
 		<#--  CREATE TABLE  -->
-	        <table border="1">
-				<#--  Assign title  -->
-				<title>Summary of acute toxicity</title>
-				
-				<#--  Define table header  -->
-	            <thead align="center" valign="middle">
-					<tr>
-						<th><?dbfo bgcolor="#FBDDA6" ?>
-                            <emphasis role="bold">
-                                Method, guideline, deviations1 if any
-                            </emphasis>
-                        </th>
-						<th><?dbfo bgcolor="#FBDDA6" ?>
-                            <emphasis role="bold">
-                                Species, strain, sex, no/group
-                            </emphasis>
-                        </th>
-						<th><?dbfo bgcolor="#FBDDA6" ?>
-                            <emphasis role="bold">
-                                Test substance
-                            </emphasis>
-                        </th>
-						<th><?dbfo bgcolor="#FBDDA6" ?>
-                            <emphasis role="bold">
-                                Dose levels, duration of exposure
-                            </emphasis>
-                        </th>
-                        <th><?dbfo bgcolor="#FBDDA6" ?>
-                            <emphasis role="bold">
-                                Value LD50
-                            </emphasis>
-                        </th>
-                        <th><?dbfo bgcolor="#FBDDA6" ?>
-                            <emphasis role="bold">
-                                Reference
-                            </emphasis>
-                        </th>
-					</tr>
-	            </thead>
-				
-				<#--  Define table body  -->
-	            <tbody valign="middle">
-                    <tr>
-						<td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-	            </tbody>
-	        </table>
+        <table border="1">
+            <#--  Assign title  -->
+            <title>Summary of acute toxicity</title>
+            
+            <#--  Define table header  -->
+            <thead align="center" valign="middle">
+                <tr>
+                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                        <emphasis role="bold">
+                            Method, guideline, deviations1 if any
+                        </emphasis>
+                    </th>
+                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                        <emphasis role="bold">
+                            Species, strain, sex, no/group
+                        </emphasis>
+                    </th>
+                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                        <emphasis role="bold">
+                            Test substance
+                        </emphasis>
+                    </th>
+                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                        <emphasis role="bold">
+                            Dose levels, duration of exposure
+                        </emphasis>
+                    </th>
+                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                        <emphasis role="bold">
+                            Value LD50
+                        </emphasis>
+                    </th>
+                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                        <emphasis role="bold">
+                            Reference
+                        </emphasis>
+                    </th>
+                </tr>
+            </thead>
+            
+            <#--  Define table body  -->
+            <tbody valign="middle">
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
 	</#compress>
 </#macro>
 
@@ -230,7 +296,7 @@ given to the module, in this case "com" -->
 <#-- NOTE: the code below should change to accommodate special cases 
                     -->
     <#-- Get document based on document type and document subtype for the active substance dataset -->
-    <#assign docList = iuclid.getSectionDocumentsForParentKey(subject.documentKey, doctType, docSubType) />
+    <#assign docList = iuclid.getSectionDocumentsForParentKey(subject.documentKey, docType, docSubType) />
 
     <#-- Set the flag to print name of document if more than one-->
     <#assign printDocName = docList?size gt 1 />
