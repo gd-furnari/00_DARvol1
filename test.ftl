@@ -124,6 +124,102 @@ given to the module, in this case "com" -->
                     NOTE: the table of study comparison could also be included within the macro
                     -->
                     <#--  <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity"/>  -->
+                    
+                    <#-- Parse Acute Toxicity document -->
+                    <#assign summaryList = iuclid.getSectionDocumentsForParentKey(activeSubstance.documentKey, "ENDPOINT_SUMMARY", "AcuteToxicity") />
+
+                    <#list summaryList as summary>
+                        <#--
+                        <para>
+                            Iteration over summerList
+                        </para>
+                        -->
+
+                        <#--  <#assign studyRecordList = iuclid.getDocumentForKey(summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaOralRoute.LinkToRelevantStudyRecords) />  -->
+
+                        <#--  
+                        <para>
+                            Before iteration over studyRecordList
+                        </para>  
+                        -->
+
+                        <#--  
+                        <para>
+                            <@com.picklist summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaOralRoute.LinkToRelevantStudyRecords.StudyNameType.AcuteToxicityOral.AdministrativeData.Endpoint/>
+                        </para>  
+                        -->
+
+                        <#list summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaOralRoute.LinkToRelevantStudyRecords.StudyNameType as item>
+                            <#--  
+                            <para>
+                                Iteration over studyRecordList
+                            </para>  
+                            -->
+
+                            <#assign studyRecord = iuclid.getDocumentForKey(item) />
+
+                            <#if studyRecord?has_content>
+                                <para>
+                                    ${studyRecord.name}
+                                </para>
+                                <#--  <@com.picklist studyRecord.AcuteToxicityOral.AdministrativeData.Endpoint/>  -->
+                            </#if>
+                        </#list>
+                    </#list>
+
+                    <#--  CREATE TABLE  -->
+                    <table border="1">
+                        <#--  Assign title  -->
+                        <title>Summary of acute toxicity</title>
+                        
+                        <#--  Define table header  -->
+                        <thead align="center" valign="middle">
+                            <tr><?dbfo bgcolor="#FBDDA6" ?>
+                                <th>
+                                    <emphasis role="bold">
+                                        Method, guideline, deviations1 if any
+                                    </emphasis>
+                                </th>
+                                <th>
+                                    <emphasis role="bold">
+                                        Species, strain, sex, no/group
+                                    </emphasis>
+                                </th>
+                                <th>
+                                    <emphasis role="bold">
+                                        Test substance
+                                    </emphasis>
+                                </th>
+                                <th>
+                                    <emphasis role="bold">
+                                        Dose levels, duration of exposure
+                                    </emphasis>
+                                </th>
+                                <th>
+                                    <emphasis role="bold">
+                                        Value LD50
+                                    </emphasis>
+                                </th>
+                                <th>
+                                    <emphasis role="bold">
+                                        Reference
+                                    </emphasis>
+                                </th>
+                            </tr>
+                        </thead>
+                        
+                        <#--  Define table body  -->
+                        <tbody valign="middle">
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </sect2>
 
                 <#-- TODO: rest of subsections of 6.1 -->
@@ -159,12 +255,74 @@ given to the module, in this case "com" -->
 
 </#if>
 
+
 <#macro printSummary subject docType docSubtype>
+    <#assign docList = iuclid.getSectionDocumentsForParentKey(subject.documentKey, docType, docSubType) />
+
+	<#compress>
+		<#--  CREATE TABLE  -->
+        <table border="1">
+            <#--  Assign title  -->
+            <title>Summary of acute toxicity</title>
+            
+            <#--  Define table header  -->
+            <thead align="center" valign="middle">
+                <tr>
+                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                        <emphasis role="bold">
+                            Method, guideline, deviations1 if any
+                        </emphasis>
+                    </th>
+                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                        <emphasis role="bold">
+                            Species, strain, sex, no/group
+                        </emphasis>
+                    </th>
+                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                        <emphasis role="bold">
+                            Test substance
+                        </emphasis>
+                    </th>
+                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                        <emphasis role="bold">
+                            Dose levels, duration of exposure
+                        </emphasis>
+                    </th>
+                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                        <emphasis role="bold">
+                            Value LD50
+                        </emphasis>
+                    </th>
+                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                        <emphasis role="bold">
+                            Reference
+                        </emphasis>
+                    </th>
+                </tr>
+            </thead>
+            
+            <#--  Define table body  -->
+            <tbody valign="middle">
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+	</#compress>
+</#macro>
+
+
+<#macro printSummaryOld subject docType docSubtype>
 
 <#-- NOTE: the code below should change to accommodate special cases 
                     -->
     <#-- Get document based on document type and document subtype for the active substance dataset -->
-    <#assign docList = iuclid.getSectionDocumentsForParentKey(subject.documentKey, doctType, docSubType) />
+    <#assign docList = iuclid.getSectionDocumentsForParentKey(subject.documentKey, docType, docSubType) />
 
     <#-- Set the flag to print name of document if more than one-->
     <#assign printDocName = docList?size gt 1 />

@@ -123,76 +123,7 @@ given to the module, in this case "com" -->
                     <#-- this macro prints the key information and discussion sections of the summary 
                     NOTE: the table of study comparison could also be included within the macro
                     -->
-                    <#--  <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity"/>  -->
-                    
-                    <#-- Parse Acute Toxicity document -->
-                    <#assign summaryList = iuclid.getSectionDocumentsForParentKey(activeSubstance.documentKey, "ENDPOINT_SUMMARY", "AcuteToxicity") />
-
-                    <#--  CREATE TABLE  -->
-                    <table border="1">
-                        <#--  Assign title  -->
-                        <title>Summary of acute toxicity</title>
-                        
-                        <#--  Define table header  -->
-                        <thead align="center" valign="middle">
-                            <tr>
-                                <th><?dbfo bgcolor="#FBDDA6" ?>
-                                    <emphasis role="bold">
-                                        Method, guideline, deviations1 if any
-                                    </emphasis>
-                                </th>
-                                <th><?dbfo bgcolor="#FBDDA6" ?>
-                                    <emphasis role="bold">
-                                        Species, strain, sex, no/group
-                                    </emphasis>
-                                </th>
-                                <th><?dbfo bgcolor="#FBDDA6" ?>
-                                    <emphasis role="bold">
-                                        Test substance
-                                    </emphasis>
-                                </th>
-                                <th><?dbfo bgcolor="#FBDDA6" ?>
-                                    <emphasis role="bold">
-                                        Dose levels, duration of exposure
-                                    </emphasis>
-                                </th>
-                                <th><?dbfo bgcolor="#FBDDA6" ?>
-                                    <emphasis role="bold">
-                                        Value LD50
-                                    </emphasis>
-                                </th>
-                                <th><?dbfo bgcolor="#FBDDA6" ?>
-                                    <emphasis role="bold">
-                                        Reference
-                                    </emphasis>
-                                </th>
-                            </tr>
-                        </thead>
-                        
-                        <#--  Define table body  -->
-                        <tbody valign="middle">
-                            <#list summaryList as summary>
-                                <#-- PATH: summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaOralRoute.LinkToRelevantStudyRecords -->
-                                <#if summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaOralRoute.LinkToRelevantStudyRecords?has_content>
-                                    <#list summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaOralRoute.LinkToRelevantStudyRecords as item>
-                                        <tr>
-                                            <td><@com.picklist item.AcuteToxicityOral.AdministrativeData.Endpoint/></td>
-                                            <td><@com.picklist item.AcuteToxicityOral.AdministrativeData.Endpoint/></td>
-                                            <td><@com.picklist item.AcuteToxicityOral.AdministrativeData.Endpoint/></td>
-                                            <td><@com.picklist item.AcuteToxicityOral.AdministrativeData.Endpoint/></td>
-                                            <td><@com.picklist item.AcuteToxicityOral.AdministrativeData.Endpoint/></td>
-                                            <td><@com.picklist item.AcuteToxicityOral.AdministrativeData.Endpoint/></td>
-                                        </tr>
-                                    </#list>
-                                </#if>
-                            </#list>
-
-                            
-                        </tbody>
-                    </table>
-
-                    
-    
+                    <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity"/>
                     
                 </sect2>
 
@@ -231,9 +162,11 @@ given to the module, in this case "com" -->
 
 
 <#macro printSummary subject docType docSubtype>
-    <#assign docList = iuclid.getSectionDocumentsForParentKey(subject.documentKey, docType, docSubType) />
-
-	<#compress>
+    <#--  Parse Acute Toxicity document  -->
+    <#--  Get document based on document type and document subtype for the active substance dataset  -->
+    <#local summaryList = iuclid.getSectionDocumentsForParentKey(subject.documentKey, docType, docSubtype) />
+    
+    <#compress>
 		<#--  CREATE TABLE  -->
         <table border="1">
             <#--  Assign title  -->
@@ -241,33 +174,33 @@ given to the module, in this case "com" -->
             
             <#--  Define table header  -->
             <thead align="center" valign="middle">
-                <tr>
-                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                <tr><?dbfo bgcolor="#FBDDA6" ?>
+                    <th>
                         <emphasis role="bold">
                             Method, guideline, deviations1 if any
                         </emphasis>
                     </th>
-                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                    <th>
                         <emphasis role="bold">
                             Species, strain, sex, no/group
                         </emphasis>
                     </th>
-                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                    <th>
                         <emphasis role="bold">
                             Test substance
                         </emphasis>
                     </th>
-                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                    <th>
                         <emphasis role="bold">
                             Dose levels, duration of exposure
                         </emphasis>
                     </th>
-                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                    <th>
                         <emphasis role="bold">
                             Value LD50
                         </emphasis>
                     </th>
-                    <th><?dbfo bgcolor="#FBDDA6" ?>
+                    <th>
                         <emphasis role="bold">
                             Reference
                         </emphasis>
@@ -277,14 +210,98 @@ given to the module, in this case "com" -->
             
             <#--  Define table body  -->
             <tbody valign="middle">
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
+                <#--  Loop over the summary list  -->
+                <#list summaryList as summary>
+                    <#--  Loop over the study record list  -->
+                    <#list summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaOralRoute.LinkToRelevantStudyRecords.StudyNameType as item>
+                        <#--  Get study record  -->
+                        <#assign studyRecord = iuclid.getDocumentForKey(item) />
+
+                        <#--  Print necessary fields in row  -->
+                        <#if studyRecord?has_content>
+                            <tr>
+                                <#--  Method, guideline, deviations cell  -->
+                                <td>
+                                    <#local studyRecordTestGuideline = studyRecord.MaterialsAndMethods.Guideline />
+
+                                    <#if studyRecordTestGuideline?has_content>
+                                        <#list studyRecordTestGuideline as row>
+                                            Guideline: 
+                                            <@com.picklist row.Guideline />
+
+                                            <sbr/>
+
+                                            Deviation: 
+                                            <@com.picklist row.Deviation /><#if !row?is_last>,<@com.emptyLine/></#if>
+                                        </#list>
+                                    </#if>
+                                </td>
+
+                                <#--  Species, strain, sex cell  -->
+                                <td>
+                                    <#if studyRecord.MaterialsAndMethods.TestAnimals.Species?has_content>
+                                        Species:
+                                        <@com.picklist studyRecord.MaterialsAndMethods.TestAnimals.Species />
+
+                                        <@com.emptyLine/>
+                                    </#if>
+
+                                    <#if studyRecord.MaterialsAndMethods.TestAnimals.Strain?has_content>
+                                        Strain:
+                                        <@com.picklist studyRecord.MaterialsAndMethods.TestAnimals.Strain />
+
+                                        <@com.emptyLine/>
+                                    </#if>
+
+                                    <#if studyRecord.MaterialsAndMethods.TestAnimals.Sex?has_content>
+                                        Sex:
+                                        <@com.picklist studyRecord.MaterialsAndMethods.TestAnimals.Sex />
+                                    </#if>
+                                </td>
+
+                                <#--  Test substance cell  -->
+                                <td>
+                                    <#local testMaterial = iuclid.getDocumentForKey(studyRecord.MaterialsAndMethods.TestMaterials.TestMaterialInformation) />
+
+                                    <#if testMaterial?has_content>
+                                        <#local testMaterialUrl=iuclid.webUrl.entityView(testMaterial.documentKey)/>
+
+                                        <ulink url="${testMaterialUrl}"><@com.value testMaterial.Name/></ulink>
+                                    </#if>
+                                </td>
+
+                                <#--  Dose levels, duration of exposure cell  -->
+                                <td>
+                                    <#if studyRecord.MaterialsAndMethods.AdministrationExposure.Doses?has_content>
+                                        Dose levels:
+                                        <@com.text studyRecord.MaterialsAndMethods.AdministrationExposure.Doses />
+
+                                        <@com.emptyLine/>
+                                    </#if>
+
+                                    <#if studyRecord.MaterialsAndMethods.AdministrationExposure.Doses?has_content>
+                                        Duration of exposure: TO BE CONFIRMED
+                                        <#--  <@com.text studyRecord.MaterialsAndMethods.AdministrationExposure.Doses />  -->
+                                    </#if>
+                                </td>
+
+                                <#--  Value LD50 cell  -->
+                                <td>
+                                    <#if studyRecord.ResultsAndDiscussion.EffectLevels?has_content>
+                                        <#list studyRecord.ResultsAndDiscussion.EffectLevels as row>
+                                            <#if studyRecord.ResultsAndDiscussion.EffectLevels.EffectLevel?has_content>
+                                                <@com.value studyRecord.ResultsAndDiscussion.EffectLevels.EffectLevel />
+                                            </#if>
+                                        </#list>
+                                    </#if>
+                                </td>
+
+                                <#--  Reference cell  -->
+                                <td></td>
+                            </tr>
+                        </#if>
+                    </#list>
+                </#list>
             </tbody>
         </table>
 	</#compress>
