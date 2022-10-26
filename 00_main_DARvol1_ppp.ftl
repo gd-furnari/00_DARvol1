@@ -123,11 +123,17 @@ given to the module, in this case "com" -->
                     <#-- this macro prints the key information and discussion sections of the summary 
                     NOTE: the table of study comparison could also be included within the macro
                     -->
-                    <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" "ORAL" />
+                    <para role="small">
+                        <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" "ORAL" />
+                    </para>
 
-                    <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" "INHALATION" />
+                    <para role="small">
+                        <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" "INHALATION" />
+                    </para>
 
-                    <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" "DERMAL" />
+                    <para role="small">
+                        <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" "DERMAL" />
+                    </para>
                     
                 </sect2>
 
@@ -164,7 +170,7 @@ given to the module, in this case "com" -->
 
 </#if>
 
-<#--  Print summary table - Select "ORAL", "INHALATION" or "DERMAL" as a route -->
+<#--  Print summary table on acute toxicity - Select "ORAL", "INHALATION" or "DERMAL" as a route -->
 <#macro printSummary subject docType docSubtype route="ORAL">
     <#--  Parse Acute Toxicity document  -->
     <#--  Get document based on document type and document subtype for the active substance dataset  -->
@@ -296,9 +302,10 @@ given to the module, in this case "com" -->
                                         <#--  Form  -->
                                         <emphasis role="strong">Form: </emphasis>
                                         <sbr/>
+                                        TO BE CONFIRMED
 
                                         <#if studyRecord.MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposure?has_content>
-                                            <@com.picklist studyRecord.MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposure />
+                                            <#--  <@com.picklist studyRecord.MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposure />  -->
                                         <#else>
                                             No form available
                                         </#if>
