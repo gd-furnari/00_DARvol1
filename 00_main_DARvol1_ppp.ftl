@@ -123,7 +123,11 @@ given to the module, in this case "com" -->
                     <#-- this macro prints the key information and discussion sections of the summary 
                     NOTE: the table of study comparison could also be included within the macro
                     -->
-                    <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity"/>
+                    <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" "ORAL" />
+
+                    <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" "INHALATION" />
+
+                    <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" "DERMAL" />
                     
                 </sect2>
 
@@ -160,8 +164,8 @@ given to the module, in this case "com" -->
 
 </#if>
 
-
-<#macro printSummary subject docType docSubtype>
+<#--  Print summary table - Select "ORAL", "INHALATION" or "DERMAL" as a route -->
+<#macro printSummary subject docType docSubtype route="ORAL">
     <#--  Parse Acute Toxicity document  -->
     <#--  Get document based on document type and document subtype for the active substance dataset  -->
     <#local summaryList = iuclid.getSectionDocumentsForParentKey(subject.documentKey, docType, docSubtype) />
@@ -170,7 +174,7 @@ given to the module, in this case "com" -->
 		<#--  CREATE TABLE  -->
         <table border="1">
             <#--  Assign title  -->
-            <title>Summary of acute toxicity</title>
+            <title>Summary table of animal studies on acute ${route?lower_case} toxicity</title>
             
             <#--  Define table header  -->
             <thead align="center" valign="middle">
@@ -187,7 +191,7 @@ given to the module, in this case "com" -->
                     </th>
                     <th>
                         <emphasis role="bold">
-                            Test substance
+                            Test substance<#if route?upper_case == "INHALATION">, form and particle size (MMAD)</#if>
                         </emphasis>
                     </th>
                     <th>
@@ -212,10 +216,19 @@ given to the module, in this case "com" -->
             <tbody valign="middle">
                 <#--  Loop over the summary list  -->
                 <#list summaryList as summary>
+
+                    <#if route?upper_case == "ORAL">
+                        <#local studyRecordList = summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaOralRoute.LinkToRelevantStudyRecords.StudyNameType />
+                    <#elseif route?upper_case == "INHALATION">
+                        <#local studyRecordList = summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaInhalationRoute.LinkToRelevantStudyRecords.StudyNameType />
+                    <#elseif route?upper_case == "DERMAL">
+                        <#local studyRecordList = summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaDermalRoute.LinkToRelevantStudyRecords.StudyNameType />
+                    </#if>
+
                     <#--  Loop over the study record list  -->
-                    <#list summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaOralRoute.LinkToRelevantStudyRecords.StudyNameType as item>
+                    <#list studyRecordList as item>
                         <#--  Get study record  -->
-                        <#assign studyRecord = iuclid.getDocumentForKey(item) />
+                        <#local studyRecord = iuclid.getDocumentForKey(item) />
 
                         <#--  Print necessary fields in row  -->
                         <#if studyRecord?has_content>
@@ -226,12 +239,12 @@ given to the module, in this case "com" -->
 
                                     <#if studyRecordTestGuideline?has_content>
                                         <#list studyRecordTestGuideline as row>
-                                            Guideline: 
+                                            <emphasis role="strong">Guideline: </emphasis>
                                             <@com.picklist row.Guideline />
 
                                             <sbr/>
 
-                                            Deviation: 
+                                            <emphasis role="strong">Deviation: </emphasis>
                                             <@com.picklist row.Deviation /><#if !row?is_last>,<@com.emptyLine/></#if>
                                         </#list>
                                     </#if>
@@ -240,48 +253,84 @@ given to the module, in this case "com" -->
                                 <#--  Species, strain, sex cell  -->
                                 <td>
                                     <#if studyRecord.MaterialsAndMethods.TestAnimals.Species?has_content>
-                                        Species:
+                                        <emphasis role="strong">Species: </emphasis>
                                         <@com.picklist studyRecord.MaterialsAndMethods.TestAnimals.Species />
 
                                         <@com.emptyLine/>
                                     </#if>
 
                                     <#if studyRecord.MaterialsAndMethods.TestAnimals.Strain?has_content>
-                                        Strain:
+                                        <emphasis role="strong">Strain: </emphasis>
                                         <@com.picklist studyRecord.MaterialsAndMethods.TestAnimals.Strain />
 
                                         <@com.emptyLine/>
                                     </#if>
 
                                     <#if studyRecord.MaterialsAndMethods.TestAnimals.Sex?has_content>
-                                        Sex:
+                                        <emphasis role="strong">Sex: </emphasis>
                                         <@com.picklist studyRecord.MaterialsAndMethods.TestAnimals.Sex />
                                     </#if>
                                 </td>
 
                                 <#--  Test substance cell  -->
                                 <td>
+                                    <#--  Print test substance  -->
                                     <#local testMaterial = iuclid.getDocumentForKey(studyRecord.MaterialsAndMethods.TestMaterials.TestMaterialInformation) />
+                                    <#if route?upper_case == "INHALATION">
+                                        <emphasis role="strong">Test substance: </emphasis>
+                                        <sbr/>
+                                    </#if>
 
                                     <#if testMaterial?has_content>
                                         <#local testMaterialUrl=iuclid.webUrl.entityView(testMaterial.documentKey)/>
 
                                         <ulink url="${testMaterialUrl}"><@com.value testMaterial.Name/></ulink>
+                                    <#else>
+                                        No test substance available
+                                    </#if>
+
+                                    <#--  Print form and MMAD - only for inhalation route  -->
+                                    <#if route?upper_case == "INHALATION">
+                                        <@com.emptyLine/>
+
+                                        <#--  Form  -->
+                                        <emphasis role="strong">Form: </emphasis>
+                                        <sbr/>
+
+                                        <#if studyRecord.MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposure?has_content>
+                                            <@com.picklist studyRecord.MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposure />
+                                        <#else>
+                                            No form available
+                                        </#if>
+
+                                        <@com.emptyLine/>
+
+                                        <#--  MMAD  -->
+                                        <emphasis role="strong">MMAD: </emphasis>
+                                        <sbr/>
+
+                                        <#if studyRecord.MaterialsAndMethods.AdministrationExposure.MassMedianAerodynamicDiameter?has_content>
+                                            <@com.range studyRecord.MaterialsAndMethods.AdministrationExposure.MassMedianAerodynamicDiameter />
+                                        <#else>
+                                            No MMAD available
+                                        </#if>
                                     </#if>
                                 </td>
 
                                 <#--  Dose levels, duration of exposure cell  -->
                                 <td>
-                                    <#if studyRecord.MaterialsAndMethods.AdministrationExposure.Doses?has_content>
-                                        Dose levels:
+                                    <#--  Print dose levels - not for inhalation route  -->
+                                    <#if route?upper_case != "INHALATION" && studyRecord.MaterialsAndMethods.AdministrationExposure.Doses?has_content>
+                                        <emphasis role="strong">Dose levels: </emphasis><sbr/>
                                         <@com.text studyRecord.MaterialsAndMethods.AdministrationExposure.Doses />
 
                                         <@com.emptyLine/>
                                     </#if>
 
-                                    <#if studyRecord.MaterialsAndMethods.AdministrationExposure.Doses?has_content>
-                                        Duration of exposure: TO BE CONFIRMED
-                                        <#--  <@com.text studyRecord.MaterialsAndMethods.AdministrationExposure.Doses />  -->
+                                    <#--  Print duration of exposure - not for oral route  -->
+                                    <#if route?upper_case != "ORAL" && studyRecord.MaterialsAndMethods.AdministrationExposure.DurationOfExposure?has_content>
+                                        <emphasis role="strong">Duration of exposure: </emphasis><sbr/>
+                                        <@com.value studyRecord.MaterialsAndMethods.AdministrationExposure.DurationOfExposure />
                                     </#if>
                                 </td>
 
@@ -289,8 +338,8 @@ given to the module, in this case "com" -->
                                 <td>
                                     <#if studyRecord.ResultsAndDiscussion.EffectLevels?has_content>
                                         <#list studyRecord.ResultsAndDiscussion.EffectLevels as row>
-                                            <#if studyRecord.ResultsAndDiscussion.EffectLevels.EffectLevel?has_content>
-                                                <@com.value studyRecord.ResultsAndDiscussion.EffectLevels.EffectLevel />
+                                            <#if row.KeyResult == true && row.EffectLevel?has_content>
+                                                <@com.range row.EffectLevel />
                                             </#if>
                                         </#list>
                                     </#if>
