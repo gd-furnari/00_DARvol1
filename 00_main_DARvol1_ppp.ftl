@@ -124,15 +124,19 @@ given to the module, in this case "com" -->
                     NOTE: the table of study comparison could also be included within the macro
                     -->
                     <para role="small">
-                        <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" "ORAL" />
+                        <@printAcuteToxicitySummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" "ORAL" />
                     </para>
 
                     <para role="small">
-                        <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" "INHALATION" />
+                        <@printAcuteToxicitySummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" "INHALATION" />
                     </para>
 
                     <para role="small">
-                        <@printSummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" "DERMAL" />
+                        <@printAcuteToxicitySummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" "DERMAL" />
+                    </para>
+
+                    <para role="small">
+                        <@printAcuteToxicitySummary activeSubstance "ENDPOINT_SUMMARY" "AcuteToxicity" "INAHALATION" />
                     </para>
                     
                 </sect2>
@@ -170,197 +174,221 @@ given to the module, in this case "com" -->
 
 </#if>
 
-<#--  Print summary table on acute toxicity - Select "ORAL", "INHALATION" or "DERMAL" as a route -->
-<#macro printSummary subject docType docSubtype route="ORAL">
-    <#--  Parse Acute Toxicity document  -->
-    <#--  Get document based on document type and document subtype for the active substance dataset  -->
-    <#local summaryList = iuclid.getSectionDocumentsForParentKey(subject.documentKey, docType, docSubtype) />
-    
-    <#compress>
-		<#--  CREATE TABLE  -->
-        <table border="1">
-            <#--  Assign title  -->
-            <title>Summary table of animal studies on acute ${route?lower_case} toxicity</title>
-            
-            <#--  Define table header  -->
-            <thead align="center" valign="middle">
-                <tr><?dbfo bgcolor="#FBDDA6" ?>
-                    <th>
-                        <emphasis role="bold">
-                            Method, guideline, deviations1 if any
-                        </emphasis>
-                    </th>
-                    <th>
-                        <emphasis role="bold">
-                            Species, strain, sex, no/group
-                        </emphasis>
-                    </th>
-                    <th>
-                        <emphasis role="bold">
-                            Test substance<#if route?upper_case == "INHALATION">, form and particle size (MMAD)</#if>
-                        </emphasis>
-                    </th>
-                    <th>
-                        <emphasis role="bold">
-                            Dose levels, duration of exposure
-                        </emphasis>
-                    </th>
-                    <th>
-                        <emphasis role="bold">
-                            Value LD50
-                        </emphasis>
-                    </th>
-                    <th>
-                        <emphasis role="bold">
-                            Reference
-                        </emphasis>
-                    </th>
-                </tr>
-            </thead>
-            
-            <#--  Define table body  -->
-            <tbody valign="middle">
-                <#--  Loop over the summary list  -->
-                <#list summaryList as summary>
+<#--  Print summary table on acute toxicity - Specify "ORAL", "INHALATION" or "DERMAL" as a route -->
+<#macro printAcuteToxicitySummary subject docType docSubtype route>
+    <#if route?upper_case = "ORAL" || route?upper_case = "INHALATION" || route?upper_case = "DERMAL">
+        <#--  Parse Acute Toxicity document  -->
+        <#--  Get document based on document type and document subtype for the active substance dataset  -->
+        <#local summaryList = iuclid.getSectionDocumentsForParentKey(subject.documentKey, docType, docSubtype) />
+        
+        <#compress>
+            <#--  CREATE TABLE  -->
+            <table border="1">
+                <#--  Assign title  -->
+                <title>Summary table of animal studies on acute ${route?lower_case} toxicity</title>
+                
+                <#--  Define table header  -->
+                <thead align="center" valign="middle">
+                    <tr><?dbfo bgcolor="#FBDDA6" ?>
+                        <th>
+                            <emphasis role="bold">
+                                Method, guideline, deviations1 if any
+                            </emphasis>
+                        </th>
+                        <th>
+                            <emphasis role="bold">
+                                Species, strain, sex, no/group
+                            </emphasis>
+                        </th>
+                        <th>
+                            <emphasis role="bold">
+                                Test substance<#if route?upper_case == "INHALATION">, form and particle size (MMAD)</#if>
+                            </emphasis>
+                        </th>
+                        <th>
+                            <emphasis role="bold">
+                                Dose levels, duration of exposure
+                            </emphasis>
+                        </th>
+                        <th>
+                            <emphasis role="bold">
+                                Value LD50
+                            </emphasis>
+                        </th>
+                        <th>
+                            <emphasis role="bold">
+                                Reference
+                            </emphasis>
+                        </th>
+                    </tr>
+                </thead>
+                
+                <#--  Define table body  -->
+                <tbody valign="middle">
+                    <#--  Loop over the summary list  -->
+                    <#list summaryList as summary>
 
-                    <#if route?upper_case == "ORAL">
-                        <#local studyRecordList = summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaOralRoute.LinkToRelevantStudyRecords.StudyNameType />
-                    <#elseif route?upper_case == "INHALATION">
-                        <#local studyRecordList = summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaInhalationRoute.LinkToRelevantStudyRecords.StudyNameType />
-                    <#elseif route?upper_case == "DERMAL">
-                        <#local studyRecordList = summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaDermalRoute.LinkToRelevantStudyRecords.StudyNameType />
-                    </#if>
+                        <#if route?upper_case == "ORAL">
+                            <#local studyRecordList = summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaOralRoute.LinkToRelevantStudyRecords.StudyNameType />
+                        <#elseif route?upper_case == "INHALATION">
+                            <#local studyRecordList = summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaInhalationRoute.LinkToRelevantStudyRecords.StudyNameType />
+                        <#elseif route?upper_case == "DERMAL">
+                            <#local studyRecordList = summary.KeyValueForChemicalSafetyAssessment.AcuteToxicityViaDermalRoute.LinkToRelevantStudyRecords.StudyNameType />
+                        </#if>
 
-                    <#--  Loop over the study record list  -->
-                    <#list studyRecordList as item>
-                        <#--  Get study record  -->
-                        <#local studyRecord = iuclid.getDocumentForKey(item) />
+                        <#--  Loop over the study record list  -->
+                        <#list studyRecordList as item>
+                            <#--  Get study record  -->
+                            <#local studyRecord = iuclid.getDocumentForKey(item) />
 
-                        <#--  Print necessary fields in row  -->
-                        <#if studyRecord?has_content>
-                            <tr>
-                                <#--  Method, guideline, deviations cell  -->
-                                <td>
-                                    <#local studyRecordTestGuideline = studyRecord.MaterialsAndMethods.Guideline />
+                            <#--  Print necessary fields in row  -->
+                            <#if studyRecord?has_content>
+                                <tr>
+                                    <#--  Method, guideline, deviations cell  -->
+                                    <td>
+                                        <#local studyRecordTestGuideline = studyRecord.MaterialsAndMethods.Guideline />
 
-                                    <#if studyRecordTestGuideline?has_content>
-                                        <#list studyRecordTestGuideline as row>
-                                            <emphasis role="strong">Guideline: </emphasis>
-                                            <@com.picklist row.Guideline />
+                                        <#if studyRecordTestGuideline?has_content>
+                                            <#list studyRecordTestGuideline as row>
+                                                <emphasis role="strong">Guideline: </emphasis>
+                                                <@com.picklist row.Guideline />
 
+                                                <sbr/>
+
+                                                <emphasis role="strong">Deviation: </emphasis>
+                                                <@com.picklist row.Deviation /><#if !row?is_last>,<@com.emptyLine/></#if>
+                                            </#list>
+                                        </#if>
+                                    </td>
+
+                                    <#--  Species, strain, sex cell  -->
+                                    <td>
+                                        <#if studyRecord.MaterialsAndMethods.TestAnimals.Species?has_content>
+                                            <emphasis role="strong">Species: </emphasis>
+                                            <@com.picklist studyRecord.MaterialsAndMethods.TestAnimals.Species />
+
+                                            <@com.emptyLine/>
+                                        </#if>
+
+                                        <#if studyRecord.MaterialsAndMethods.TestAnimals.Strain?has_content>
+                                            <emphasis role="strong">Strain: </emphasis>
+                                            <@com.picklist studyRecord.MaterialsAndMethods.TestAnimals.Strain />
+
+                                            <@com.emptyLine/>
+                                        </#if>
+
+                                        <#if studyRecord.MaterialsAndMethods.TestAnimals.Sex?has_content>
+                                            <emphasis role="strong">Sex: </emphasis>
+                                            <@com.picklist studyRecord.MaterialsAndMethods.TestAnimals.Sex />
+                                        </#if>
+                                    </td>
+
+                                    <#--  Test substance cell  -->
+                                    <td>
+                                        <#--  Print test substance  -->
+                                        <#local testMaterial = iuclid.getDocumentForKey(studyRecord.MaterialsAndMethods.TestMaterials.TestMaterialInformation) />
+
+                                        <#if route?upper_case == "INHALATION">
+                                            <emphasis role="strong">Test substance: </emphasis>
+                                            <sbr/>
+                                        </#if>
+
+                                        <#if testMaterial?has_content>
+                                            <#local testMaterialUrl=iuclid.webUrl.entityView(testMaterial.documentKey)/>
+
+                                            <ulink url="${testMaterialUrl}"><@com.value testMaterial.Name/></ulink>
+                                        <#else>
+                                            No test substance available
+                                        </#if>
+
+                                        <#--  Print form and MMAD - only for inhalation route  -->
+                                        <#if route?upper_case == "INHALATION">
+                                            <@com.emptyLine/>
+
+                                            <#--  Form  -->
+                                            <emphasis role="strong">Form: </emphasis>
+                                            <sbr/>
+                                            TO BE CONFIRMED
+
+                                            <#if studyRecord.MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposure?has_content>
+                                                <#--  <@com.picklist studyRecord.MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposure />  -->
+                                            <#else>
+                                                No form available
+                                            </#if>
+
+                                            <@com.emptyLine/>
+
+                                            <#--  MMAD  -->
+                                            <emphasis role="strong">MMAD: </emphasis>
                                             <sbr/>
 
-                                            <emphasis role="strong">Deviation: </emphasis>
-                                            <@com.picklist row.Deviation /><#if !row?is_last>,<@com.emptyLine/></#if>
-                                        </#list>
-                                    </#if>
-                                </td>
-
-                                <#--  Species, strain, sex cell  -->
-                                <td>
-                                    <#if studyRecord.MaterialsAndMethods.TestAnimals.Species?has_content>
-                                        <emphasis role="strong">Species: </emphasis>
-                                        <@com.picklist studyRecord.MaterialsAndMethods.TestAnimals.Species />
-
-                                        <@com.emptyLine/>
-                                    </#if>
-
-                                    <#if studyRecord.MaterialsAndMethods.TestAnimals.Strain?has_content>
-                                        <emphasis role="strong">Strain: </emphasis>
-                                        <@com.picklist studyRecord.MaterialsAndMethods.TestAnimals.Strain />
-
-                                        <@com.emptyLine/>
-                                    </#if>
-
-                                    <#if studyRecord.MaterialsAndMethods.TestAnimals.Sex?has_content>
-                                        <emphasis role="strong">Sex: </emphasis>
-                                        <@com.picklist studyRecord.MaterialsAndMethods.TestAnimals.Sex />
-                                    </#if>
-                                </td>
-
-                                <#--  Test substance cell  -->
-                                <td>
-                                    <#--  Print test substance  -->
-                                    <#local testMaterial = iuclid.getDocumentForKey(studyRecord.MaterialsAndMethods.TestMaterials.TestMaterialInformation) />
-                                    <#if route?upper_case == "INHALATION">
-                                        <emphasis role="strong">Test substance: </emphasis>
-                                        <sbr/>
-                                    </#if>
-
-                                    <#if testMaterial?has_content>
-                                        <#local testMaterialUrl=iuclid.webUrl.entityView(testMaterial.documentKey)/>
-
-                                        <ulink url="${testMaterialUrl}"><@com.value testMaterial.Name/></ulink>
-                                    <#else>
-                                        No test substance available
-                                    </#if>
-
-                                    <#--  Print form and MMAD - only for inhalation route  -->
-                                    <#if route?upper_case == "INHALATION">
-                                        <@com.emptyLine/>
-
-                                        <#--  Form  -->
-                                        <emphasis role="strong">Form: </emphasis>
-                                        <sbr/>
-                                        TO BE CONFIRMED
-
-                                        <#if studyRecord.MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposure?has_content>
-                                            <#--  <@com.picklist studyRecord.MaterialsAndMethods.AdministrationExposure.TypeOfInhalationExposure />  -->
-                                        <#else>
-                                            No form available
-                                        </#if>
-
-                                        <@com.emptyLine/>
-
-                                        <#--  MMAD  -->
-                                        <emphasis role="strong">MMAD: </emphasis>
-                                        <sbr/>
-
-                                        <#if studyRecord.MaterialsAndMethods.AdministrationExposure.MassMedianAerodynamicDiameter?has_content>
-                                            <@com.range studyRecord.MaterialsAndMethods.AdministrationExposure.MassMedianAerodynamicDiameter />
-                                        <#else>
-                                            No MMAD available
-                                        </#if>
-                                    </#if>
-                                </td>
-
-                                <#--  Dose levels, duration of exposure cell  -->
-                                <td>
-                                    <#--  Print dose levels - not for inhalation route  -->
-                                    <#if route?upper_case != "INHALATION" && studyRecord.MaterialsAndMethods.AdministrationExposure.Doses?has_content>
-                                        <emphasis role="strong">Dose levels: </emphasis><sbr/>
-                                        <@com.text studyRecord.MaterialsAndMethods.AdministrationExposure.Doses />
-
-                                        <@com.emptyLine/>
-                                    </#if>
-
-                                    <#--  Print duration of exposure - not for oral route  -->
-                                    <#if route?upper_case != "ORAL" && studyRecord.MaterialsAndMethods.AdministrationExposure.DurationOfExposure?has_content>
-                                        <emphasis role="strong">Duration of exposure: </emphasis><sbr/>
-                                        <@com.value studyRecord.MaterialsAndMethods.AdministrationExposure.DurationOfExposure />
-                                    </#if>
-                                </td>
-
-                                <#--  Value LD50 cell  -->
-                                <td>
-                                    <#if studyRecord.ResultsAndDiscussion.EffectLevels?has_content>
-                                        <#list studyRecord.ResultsAndDiscussion.EffectLevels as row>
-                                            <#if row.KeyResult == true && row.EffectLevel?has_content>
-                                                <@com.range row.EffectLevel />
+                                            <#if studyRecord.MaterialsAndMethods.AdministrationExposure.MassMedianAerodynamicDiameter?has_content>
+                                                <@com.range studyRecord.MaterialsAndMethods.AdministrationExposure.MassMedianAerodynamicDiameter />
+                                            <#else>
+                                                No MMAD available
                                             </#if>
-                                        </#list>
-                                    </#if>
-                                </td>
+                                        </#if>
+                                    </td>
 
-                                <#--  Reference cell  -->
-                                <td></td>
-                            </tr>
-                        </#if>
+                                    <#--  Dose levels, duration of exposure cell  -->
+                                    <td>
+                                        <#--  Print dose levels - not for inhalation route  -->
+                                        <#if route?upper_case != "INHALATION" && studyRecord.MaterialsAndMethods.AdministrationExposure.Doses?has_content>
+                                            <emphasis role="strong">Dose levels: </emphasis><sbr/>
+                                            <@com.text studyRecord.MaterialsAndMethods.AdministrationExposure.Doses />
+
+                                            <@com.emptyLine/>
+                                        </#if>
+
+                                        <#--  Print duration of exposure - not for oral route  -->
+                                        <#if route?upper_case != "ORAL" && studyRecord.MaterialsAndMethods.AdministrationExposure.DurationOfExposure?has_content>
+                                            <emphasis role="strong">Duration of exposure: </emphasis><sbr/>
+                                            <@com.value studyRecord.MaterialsAndMethods.AdministrationExposure.DurationOfExposure />
+                                        </#if>
+                                    </td>
+
+                                    <#--  Value LD50 cell  -->
+                                    <td>
+                                        <#if studyRecord.ResultsAndDiscussion.EffectLevels?has_content>
+                                            <#list studyRecord.ResultsAndDiscussion.EffectLevels as row>
+                                                <#if row.KeyResult == true && row.EffectLevel?has_content>
+                                                    <@com.range row.EffectLevel />
+                                                </#if>
+                                            </#list>
+                                        </#if>
+                                    </td>
+
+                                    <#--  Reference cell  -->
+                                    <td>
+                                        <#if studyRecord.DataSource.Reference?has_content>
+                                            <#list studyRecord.DataSource.Reference as item>
+                                                <#local reference = iuclid.getDocumentForKey(item) />
+                                                <#local referenceUrl=iuclid.webUrl.entityView(reference.documentKey)/>
+
+                                                <ulink url="${referenceUrl}"><@com.value reference.GeneralInfo.Name/></ulink>
+
+                                                <#if item?has_next>
+                                                    <@com.emptyLine/>
+                                                </#if>
+                                            </#list>
+                                        </#if>
+                                    </td>
+                                </tr>
+                            </#if>
+                        </#list>
                     </#list>
-                </#list>
-            </tbody>
-        </table>
-	</#compress>
+                </tbody>
+            </table>
+        </#compress>
+    <#else>
+        <para>
+            <emphasis role="strong">ERROR:</emphasis><sbr/>
+            The summary table on acute toxicity could not be created as an invalid value ("${route}") 
+            was passed to the <emphasis>route</emphasis> parameter.<sbr/>
+            Make sure to specify "ORAL", "INHALATION" or "DERMAL" as a route when calling the 
+            <emphasis>printAcuteToxicitySummary</emphasis> macro.
+        </para>
+    </#if>
 </#macro>
 
 
